@@ -123,3 +123,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide scrollbar for all elements */
+* {
+  /* For Firefox */
+  scrollbar-width: none; /* "auto" or "thin" are other options */
+  /* For IE, Edge */
+  -ms-overflow-style: none; 
+}
+
+/* For Chrome, Safari, and Opera */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Optional: Ensure content is still scrollable */
+* {
+  overflow: auto; /* or scroll if needed */
+}

@@ -1,6 +1,7 @@
 // app/api/auth/[...nextauth]/route.ts
 import NextAuth, { type NextAuthOptions } from "next-auth"
 import GitHubProvider from "next-auth/providers/github"
+import GoogleProvider from "next-auth/providers/google"
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -8,16 +9,21 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
     }),
+
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
   ],
 
   session: {
-    strategy: "jwt", // ← must be literal, not string
+    strategy: "jwt",
   },
 
   callbacks: {
     async jwt({ token, account }) {
       if (account) {
-        token.authId = account.providerAccountId
+        token.authId = `${account.provider}:${account.providerAccountId}`
       }
       return token
     },

@@ -21,7 +21,7 @@ export function RoseMessageBubble({
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative mr-auto max-w-[80%] rounded-xl rounded-bl-none w-fit bg-muted px-4 py-3 text-sm"
+      className="relative mr-auto max-w-[80%] rounded-xl rounded-bl-none w-fit h-fit bg-muted px-4 py-3 text-sm"
     >
       {meta.placement === "inside" && (
         <Icon

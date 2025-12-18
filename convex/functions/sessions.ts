@@ -18,3 +18,14 @@ export const insert = mutation({
         return await ctx.db.insert("sessions", { userId, startedAt });
     },
 });
+
+// End a session
+export const end = mutation({
+    args: {
+      sessionId: v.id("sessions"),
+      endedAt: v.number(),
+    },
+    handler: async (ctx, { sessionId, endedAt }) => {
+      await ctx.db.patch(sessionId, { endedAt })
+    },
+})

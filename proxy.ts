@@ -1,22 +1,36 @@
-// proxy.ts
+// middleware.ts (not proxy.ts — Next expects this name)
 import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
 
 export default withAuth(
   function middleware(req) {
-    const isAuthRoute = req.nextUrl.pathname.startsWith("/login")
+    const pathname = req.nextUrl.pathname
 
-    if (req.nextauth.token && isAuthRoute) {
+    // If logged in and trying to access /login, redirect home
+    if (req.nextauth.token && pathname === "/login") {
       return NextResponse.redirect(new URL("/", req.url))
     }
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ token, req }) => {
+        const pathname = req.nextUrl.pathname
+
+        // Public routes
+        if (
+          pathname === "/login" ||
+          pathname.startsWith("/api/auth")
+        ) {
+          return true
+        }
+
+        // Everything else requires auth
+        return !!token
+      },
     },
   }
 )
 
 export const config = {
-  matcher: ["/((?!api|_next|favicon.ico).*)"],
+  matcher: ["/((?!_next|favicon.ico).*)"],
 }

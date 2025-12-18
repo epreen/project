@@ -153,11 +153,13 @@ export default function RoseUI() {
       <div className="absolute h-96 w-96 inset-0 pointer-events-none overflow-hidden rounded-full blur-3xl">
         <div
           id="glow-a"
-          className="absolute h-96 w-96 rounded-full bg-primary/50 blur-3xl"
+          className="absolute rounded-full bg-primary/10 blur-3xl"
+          style={{ width: window.innerWidth * 0.25, height: window.innerWidth * 0.25 }}
         />
         <div
           id="glow-b"
-          className="absolute h-96 w-96 rounded-full bg-rose-500/50 blur-3xl"
+          className="absolute h-96 w-96 rounded-full bg-rose-500/10 blur-3xl"
+          style={{ width: window.innerWidth * 0.25, height: window.innerWidth * 0.25 }}
         />
       </div>
 
@@ -166,9 +168,9 @@ export default function RoseUI() {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
       >
-        <Card className="relative max-w-lg min-w-md backdrop-blur-2xl bg-background/70 flex flex-col max-h-[700px] min-h-[540px]">
+        <Card className="relative w-full max-w-lg min-w-[280px] sm:min-w-md backdrop-blur-2xl bg-background/70 flex flex-col max-h-[80vh] min-h-[60vh] sm:max-h-[700px] sm:min-h-[540px] rounded-2xl shadow-lg">
           {/* Sticky Header */}
-          <CardHeader className="sticky min-h-fit top-0 z-10 flex items-start justify-between w-full py-4 px-6 bg-background/90 backdrop-blur-xs">
+          <CardHeader className="sticky min-h-fit top-0 z-10 flex items-start justify-between w-full py-3 sm:py-4 px-4 sm:px-6 bg-background/80 sm:bg-background/90 backdrop-blur-sm sm:backdrop-blur-md">
             <div className="flex flex-col">
               <h1 className="text-xl font-semibold tracking-wide text-primary/50">Rose</h1>
               <Presence state={roseState} />
@@ -179,18 +181,26 @@ export default function RoseUI() {
           {/* Scrollable Chat Content */}
           <CardContent
             ref={chatContainerRef}
-            className="flex-1 flex flex-col gap-3 px-6 py-4 min-h-fit overflow-y-auto"
+            className="flex-1 flex flex-col gap-3 px-4 sm:px-6 py-4 min-h-fit overflow-y-auto"
           >
             <AnimatePresence>
-              {messages.map((m, i) =>
-                m.role === "rose" ? <RoseMessageBubble key={i} content={m.content} /> : <UserBubble key={i} content={m.content} />
-              )}
+              {messages.map((m, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {m.role === "rose" ? <RoseMessageBubble content={m.content} /> : <UserBubble content={m.content} />}
+                </motion.div>
+              ))}
               {roseState === "thinking" && <RoseTypingBubble />}
             </AnimatePresence>
           </CardContent>
 
           {/* Sticky Footer */}
-          <CardFooter className="sticky min-h-fit bottom-0 z-10 py-4 px-6 flex gap-2 items-center bg-background/70 backdrop-blur-md">
+          <CardFooter className="sticky min-h-fit bottom-0 z-10 py-3 sm:py-4 px-4 sm:px-6 flex gap-2 items-center bg-background/70 sm:bg-background/80 backdrop-blur-sm sm:backdrop-blur-md">
             <Button
               variant="ghost"
               size="sm"
@@ -205,14 +215,13 @@ export default function RoseUI() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Speak carefully. Rose is listening."
               onFocus={() => setRoseState("listening")}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") sendMessage()
-              }}
-              className="flex-1 bg-background/30 px-4 py-2 placeholder:text-muted-foreground focus:ring-1 focus:outline-none"
+              onKeyDown={(e) => { if (e.key === "Enter") sendMessage() }}
+              className="flex-1 bg-background/30 px-3 sm:px-4 py-1.5 sm:py-2 placeholder:text-muted-foreground focus:ring-1 focus:outline-none rounded-md"
             />
+
             <Button
               onClick={sendMessage}
-              className="bg-accent hover:bg-accent/80 text-accent-foreground px-4 py-2"
+              className="bg-accent hover:bg-accent/80 text-accent-foreground px-3 sm:px-4 py-1.5 sm:py-2 rounded-md"
             >
               Send
             </Button>
@@ -226,9 +235,21 @@ export default function RoseUI() {
 function Indicator({ state }: { state: RoseState }) {
   return (
     <motion.div key={state} initial={{ opacity: 0, y: -2 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-1 text-xs text-muted-foreground">
-      <span className={`w-2 h-2 rounded-full ${
-        state === "listening" ? "bg-green-400" : state === "thinking" ? "bg-yellow-400" : "bg-gray-400"
-      }`} />
+      <span
+        className={`
+          w-1 h-1 rounded-full
+          ${
+            state === "listening" ? "bg-green-400" : state === "thinking" ? "bg-yellow-400" : "bg-gray-400"
+          }
+        `}
+        style={{
+          backgroundColor:
+            state === "listening" ? "rgba(52,211,153,0.5)" :
+            state === "thinking" ? "rgba(250,204,21,0.5)" :
+            "rgba(248,113,113,0.5)"
+        }}
+        
+      />
     </motion.div>
   )
 }
